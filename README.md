@@ -17,7 +17,9 @@
 
 * Ejecutar data/aclimdbCleaner.py (5 minutos de ejecución como mucho)
 * Ejecutar doc2vec.py (En mi ordenador 40 minutos)
-* Ejecutar doc2vecClass.py (1 minuto como mucho)
+* Dos opciones de clasificación:
+  * Ejecutar doc2vecClass.py (1 minuto como mucho)
+  * Ejecutar doc2vecDBOWDMclass.py esta da la mejor precisión, junta DM y DBOW en un mismo vector de clasificación
 
 ## Librerias en uso
 * Blas
