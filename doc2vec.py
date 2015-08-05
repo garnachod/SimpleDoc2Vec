@@ -69,9 +69,11 @@ class LabeledLineSentence(object):
 
 if __name__ == '__main__':
 	sources = {'data/testneg.txt':'TEST_NEG', 'data/testpos.txt':'TEST_POS', 'data/trainneg.txt':'TRAIN_NEG', 'data/trainpos.txt':'TRAIN_POS', 'data/trainunsup.txt':'TRAIN_UNSP'}
+	dimension = 100
+	total_start = time.time()
 
 	sentences = LabeledLineSentence(sources)
-	model = Doc2Vec(min_count=1, window=10, size=200, sample=1e-3, negative=5, workers=6)
+	model = Doc2Vec(min_count=1, window=10, size=dimension, sample=1e-3, negative=5, dm=0 ,workers=6)
 	print "inicio vocab"
 	model.build_vocab(sentences.to_array())
 	print "fin vocab"
@@ -80,10 +82,31 @@ if __name__ == '__main__':
 
 	for epoch in range(20):
 		start = time.time()
-		print "iniciando epoca:"
+		print "iniciando epoca DBOW:"
 		model.train(sentences.sentences_perm())
 		#model.train()
 		end = time.time()
 		print "tiempo de la epoca " + str(epoch) +": " + str(end - start)
 
-	model.save('./imdb.d2v')
+	model.save('./imdb_dbow.d2v')
+
+	model = Doc2Vec(min_count=1, window=10, size=dimension, sample=1e-3, negative=5, workers=6)
+	print "inicio vocab"
+	model.build_vocab(sentences.to_array())
+	print "fin vocab"
+	#for sentence in sentences.sentences_perm():
+	#	print sentence[1]
+
+	for epoch in range(20):
+		start = time.time()
+		print "iniciando epoca DM:"
+		model.train(sentences.sentences_perm())
+		#model.train()
+		end = time.time()
+		print "tiempo de la epoca " + str(epoch) +": " + str(end - start)
+
+	model.save('./imdb_dm.d2v')
+
+	total_end = time.time()
+
+	print "tiempo total:" + str((end - start)/60.0)

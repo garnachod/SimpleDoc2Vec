@@ -1,34 +1,35 @@
 # classifier
 from sklearn.linear_model import LogisticRegression
 from gensim.models import Doc2Vec
-import numpy
+import numpy as np
 from sklearn import svm
 from NNet import NeuralNet
 
 if __name__ == '__main__':
-	model = Doc2Vec.load('./imdb_dbow.d2v')
+	model_dbow = Doc2Vec.load('./imdb_dbow.d2v')
+	model_dm = Doc2Vec.load('./imdb_dm.d2v')
 
 	#print model["TRAIN_POS_8029"]
 	#exit()
-	train_arrays = numpy.zeros((25000, 100))
-	train_labels = numpy.zeros(25000)
+	train_arrays = np.zeros((25000, 200))
+	train_labels = np.zeros(25000)
 
 	for i in range(12500):
 	    prefix_train_pos = 'TRAIN_POS_' + str(i)
 	    prefix_train_neg = 'TRAIN_NEG_' + str(i)
-	    train_arrays[i] = model.docvecs[prefix_train_pos]
-	    train_arrays[12500 + i] = model.docvecs[prefix_train_neg]
+	    train_arrays[i] = np.concatenate((model_dbow.docvecs[prefix_train_pos],model_dm.docvecs[prefix_train_pos]))
+	    train_arrays[12500 + i] = np.concatenate((model_dbow.docvecs[prefix_train_neg], model_dm.docvecs[prefix_train_neg]))
 	    train_labels[i] = 1
 	    train_labels[12500 + i] = 0
 
-	test_arrays = numpy.zeros((25000, 100))
-	test_labels = numpy.zeros(25000)
+	test_arrays = np.zeros((25000, 200))
+	test_labels = np.zeros(25000)
 
 	for i in range(12500):
 	    prefix_test_pos = 'TEST_POS_' + str(i)
 	    prefix_test_neg = 'TEST_NEG_' + str(i)
-	    test_arrays[i] = model.docvecs[prefix_test_pos]
-	    test_arrays[12500 + i] = model.docvecs[prefix_test_neg]
+	    test_arrays[i] = np.concatenate((model_dbow.docvecs[prefix_test_pos], model_dm.docvecs[prefix_test_pos]))
+	    test_arrays[12500 + i] = np.concatenate((model_dbow.docvecs[prefix_test_neg], model_dm.docvecs[prefix_test_neg]))
 	    test_labels[i] = 1
 	    test_labels[12500 + i] = 0
 
@@ -54,7 +55,7 @@ if __name__ == '__main__':
 
 
 	nnet = NeuralNet(50, learn_rate=1e-2)
-	maxiter = 1000
+	maxiter = 5000
 	nnet.fit(train_arrays, train_labels, fine_tune=False, SGD=True, batch=150, maxiter=maxiter, rho=0.9)
 	print "Red neuronal"
 	print nnet.score(test_arrays, test_labels)
