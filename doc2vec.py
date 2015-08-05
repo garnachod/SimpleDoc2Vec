@@ -109,4 +109,4 @@ if __name__ == '__main__':
 
 	total_end = time.time()
 
-	print "tiempo total:" + str((end - start)/60.0)
+	print "tiempo total:" + str((total_end - total_start)/60.0)
