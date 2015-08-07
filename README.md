@@ -46,7 +46,7 @@
 * Sklearn
 
 ## Datos
-Se debe simular el vector de los documentos, no como en la primera versión de este código. En las siguentes tablas y gráficas se muestran los parámetros elegidos y el porque. Si el coseno se acerca a 1 es que ha "apendido" bien el vector documento.
+Se debe simular el vector de los documentos (Método propuesto). En las siguentes tablas y gráficas se muestran los parámetros elegidos y el porque. Si el coseno se acerca a 1 es que ha "apendido" bien el vector documento.
 
 ![Alt text](./img/dmCosenos.png?raw=true "Tabla de cosenos")
 ![Alt text](./img/dmCosenoG.png?raw=true "DM gráfica cosenos")
@@ -54,5 +54,9 @@ Se debe simular el vector de los documentos, no como en la primera versión de e
 Siguendo el mismo proceso con DBOW
 
 ![Alt text](./img/dbowCosenoG.png?raw=true "DBOW gráfica cosenos")
+
+Si no se sigue el método propuesto y se aprenden todos los documentos, el menor error encontrado es del 1 - 0.88556
+
+Continuaremos informando
 
 
