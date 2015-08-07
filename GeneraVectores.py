@@ -55,6 +55,9 @@ class GeneraVectores(object):
 	def getVecsFromWords(self, words):
 		return self.model.infer_vector(words, steps=self.steps, alpha=self.alpha)
 
+	def setModel(self, model):
+		self.model = model
+
 
 def pruebaCompletaCosenosDM():
 	model = Doc2Vec.load('./imdb_dm.d2v')
@@ -64,7 +67,7 @@ def pruebaCompletaCosenosDM():
 
 
 	steps = [1,2,3,5,7,10,15]
-	alphas = [0.1, 0.075, 0.035]
+	alphas = [0.2,0.1, 0.075]
 	for alpha in alphas:
 		for step in steps:
 			generador.steps = step
@@ -109,4 +112,4 @@ def puebaSimpleCosenos():
 	print dot(matutils.unitvec(vecs[0]), matutils.unitvec(model.docvecs["TRAIN_NEG_0"]))
 
 if __name__ == '__main__':
-	pruebaCompletaCosenosDBOW()
+	pruebaCompletaCosenosDM()

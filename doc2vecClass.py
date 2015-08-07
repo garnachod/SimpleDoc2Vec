@@ -11,7 +11,7 @@ if __name__ == '__main__':
 
 	#print model["TRAIN_POS_8029"]
 	#exit()
-	dim = 400
+	dim = 100
 	train_arrays = numpy.zeros((25000, dim))
 	train_labels = numpy.zeros(25000)
 

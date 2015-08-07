@@ -15,21 +15,21 @@ if __name__ == '__main__':
 	train_arrays = np.zeros((25000, dim))
 	train_labels = np.zeros(25000)
 
-	generador_dbow = GeneraVectores(model_dbow)
-	dbowVecs_Pos = generador_dbow.getVecsFromFile("data/trainpos.txt")
+	generador = GeneraVectores(model_dbow)
+	dbowVecs_Pos = generador.getVecsFromFile("data/trainpos.txt")
 	print "generados vectores dbowVecs_Pos"
-	dbowVecs_Neg = generador_dbow.getVecsFromFile("data/trainneg.txt")
-	print "generados vectores dbowVecs_Neg"
-	generador_dm = GeneraVectores(model_dm)
-	dmVecs_Pos = generador_dm.getVecsFromFile("data/trainpos.txt")
+	generador.setModel(model_dm)
+	dmVecs_Pos = generador.getVecsFromFile("data/trainpos.txt")
 	print "generados vectores dmVecs_Pos"
-	dmVecs_Neg = generador_dm.getVecsFromFile("data/trainneg.txt")
+	generador.setModel(model_dbow)
+	dbowVecs_Neg = generador.getVecsFromFile("data/trainneg.txt")
+	print "generados vectores dbowVecs_Neg"
+	generador.setModel(model_dm)
+	dmVecs_Neg = generador.getVecsFromFile("data/trainneg.txt")
 	print "generados vectores dmVecs_Neg"
 
 
 	for i in range(12500):
-		#prefix_train_pos = 'TRAIN_POS_' + str(i)
-		#prefix_train_neg = 'TRAIN_NEG_' + str(i)
 		train_arrays[i] = np.concatenate((dbowVecs_Pos[i],dmVecs_Pos[i]))
 		train_arrays[12500 + i] = np.concatenate((dbowVecs_Neg[i],dmVecs_Neg[i]))
 		train_labels[i] = 1
@@ -38,13 +38,17 @@ if __name__ == '__main__':
 	test_arrays = np.zeros((25000, dim))
 	test_labels = np.zeros(25000)
 
-	dbowVecs_Pos = generador_dbow.getVecsFromFile("data/testpos.txt")
+	generador.setModel(model_dbow)
+	dbowVecs_Pos = generador.getVecsFromFile("data/testpos.txt")
 	print "generados vectores dbowVecs_Pos Test"
-	dbowVecs_Neg = generador_dbow.getVecsFromFile("data/testneg.txt")
-	print "generados vectores dbowVecs_Neg Test"
-	dmVecs_Pos = generador_dm.getVecsFromFile("data/testpos.txt")
+	generador.setModel(model_dm)
+	dmVecs_Pos = generador.getVecsFromFile("data/testpos.txt")
 	print "generados vectores dmVecs_Pos Test"
-	dmVecs_Neg = generador_dm.getVecsFromFile("data/testneg.txt")
+	generador.setModel(model_dbow)
+	dbowVecs_Neg = generador.getVecsFromFile("data/testneg.txt")
+	print "generados vectores dbowVecs_Neg Test"
+	generador.setModel(model_dbow)
+	dmVecs_Neg = generador.getVecsFromFile("data/testneg.txt")
 	print "generados vectores dmVecs_Neg Test"
 
 	for i in range(12500):
@@ -68,13 +72,13 @@ if __name__ == '__main__':
 
 
 
-	"""
+	
 	nnet = NeuralNet(50, learn_rate=1e-2)
 	maxiter = 5000
 	nnet.fit(train_arrays, train_labels, fine_tune=False, SGD=True, batch=200, maxiter=maxiter)
 	print "Red neuronal"
 	print nnet.score(test_arrays, test_labels)
-	"""
+	
 	"""
 	print "imprimiendo .ARFF"
 	f = open("entrenamiento.arff", "w", 4096)

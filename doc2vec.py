@@ -65,7 +65,7 @@ if __name__ == '__main__':
 	total_start = time.time()
 
 	sentences = LabeledLineSentence(sources)
-	dbow = False
+	dbow = True
 	if dbow:
 		model = Doc2Vec(min_count=1, window=10, size=dimension, sample=1e-3, negative=5, dm=0 ,workers=6, alpha=0.04)
 		
@@ -90,7 +90,10 @@ if __name__ == '__main__':
 
 	dm = True
 	if dm:
-		model = Doc2Vec(min_count=1, window=10, size=dimension, sample=1e-3, negative=5, workers=6, dm_mean=1, alpha=0.04)
+		#model = Doc2Vec(min_count=1, window=10, size=dimension, sample=1e-3, negative=5, workers=6, dm_mean=1, alpha=0.04)
+		model = Doc2Vec(min_count=1, window=10, size=dimension, sample=1e-3, negative=5, workers=6, alpha=0.04)
+		#model = Doc2Vec(min_count=1, window=10, size=dimension, sample=1e-3, negative=5, workers=6, alpha=0.04, dm_concat=1)
+		#
 		print "inicio vocab"
 		model.build_vocab(sentences.to_array())
 		print "fin vocab"
