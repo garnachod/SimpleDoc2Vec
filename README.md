@@ -1,4 +1,4 @@
-# SimpleDoc2Vec
+# Paragraph Vector Sentiment Classification IMDB
 
 ## Documentación:
 * Articulo original
@@ -9,6 +9,23 @@
   * http://nbviewer.ipython.org/github/fbkarsdorp/doc2vec/blob/master/doc2vec.ipynb
   * http://linanqiu.github.io/2015/05/20/word2vec-sentiment/
   * https://districtdatalabs.silvrback.com/modern-methods-for-sentiment-analysis
+
+## Método propuesto (Mejor aproximación a un problema real)
+* Paso 0:
+  * Limpiar conjunto de datos (StopWords, Caracteres raros...)
+* Paso 1, generar vectores de las palabras:
+  * Se utilizan los documentos de Train y Unsup (75K Docs) los otros 25k no se usan.
+  * Se generar los entrenamientos que mejor resultado han dado por separado
+* Paso 2:
+  * Se generan los vectores de documentos a partir del entrenamiento anterior (Doc2Vec.infer_vector())
+* Paso 3:
+  * Se entrenan los clasificadores (50% train, 50% test, desglosados como en el conjunto inicial)
+
+## Problemas encontrados y no solucionados
+* Dada esta metodología, no es posible aproximarse a los resultados que se exponen en el paper
+* Menor error encontrado 11.9% (DBOW, epocas 30, size 100)
+* Los cosenos no se aproximan al entrenamiento o no tanto como se esperaría al menos en DM
+* Utilizando todos los datos para entrenar y cogiendo los vectores generados en entrenamiento es posible bajar el error
 
 ## ¿Cómo hacerlo funcionar?
 * Descargar conjunto de datos
@@ -27,9 +44,6 @@
 * Scipy (Cuidado) máxima versión 0.15
 * Gensim última versión
 * Sklearn
-
-## Pasos futuros:
-* Intentar buscar un error de clasificación cercano al 7% que es el que se consigue en el paper
 
 ## Datos
 Se debe simular el vector de los documentos, no como en la primera versión de este código. En las siguentes tablas y gráficas se muestran los parámetros elegidos y el porque. Si el coseno se acerca a 1 es que ha "apendido" bien el vector documento.
