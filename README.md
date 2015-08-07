@@ -34,6 +34,11 @@
 ## Datos
 Se debe simular el vector de los documentos, no como en la primera versión de este código. En las siguentes tablas y gráficas se muestran los parámetros elegidos y el porque. Si el coseno se acerca a 1 es que ha "apendido" bien el vector documento.
 
-![Alt text](./img/dmCosenos.png?raw=true "Diseño de clases")
+![Alt text](./img/dmCosenos.png?raw=true "Tabla de cosenos")
+![Alt text](./img/dmCosenoG.png?raw=true "DM gráfica cosenos")
+
+Siguendo el mismo proceso con DBOW
+
+![Alt text](./img/dbowCosenoG.png?raw=true "DBOW gráfica cosenos")
 
 
