@@ -26,7 +26,13 @@
 * Numpy última versión
 * Scipy (Cuidado) máxima versión 0.15
 * Gensim última versión
-* NNet https://github.com/mczerny/NNet
+* Sklearn
 
 ## Pasos futuros:
 * Intentar buscar un error de clasificación cercano al 7% que es el que se consigue en el paper
+
+## Datos
+Se debe simular el vector de los documentos, no como en la primera versión de este código. En las siguentes tablas y gráficas se muestran los parámetros elegidos y el porque. Si el coseno se acerca a 1 es que ha "apendido" bien el vector documento.
+![Alt text](./img/dmCosenos.png?raw=true "Diseño de clases")
+
+
