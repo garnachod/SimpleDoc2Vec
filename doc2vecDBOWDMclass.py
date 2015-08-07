@@ -1,6 +1,7 @@
 # classifier
 from sklearn.linear_model import LogisticRegression
 from gensim.models import Doc2Vec
+from GeneraVectores import GeneraVectores
 import numpy as np
 from sklearn import svm
 from NNet import NeuralNet
@@ -8,56 +9,94 @@ from NNet import NeuralNet
 if __name__ == '__main__':
 	model_dbow = Doc2Vec.load('./imdb_dbow.d2v')
 	model_dm = Doc2Vec.load('./imdb_dm.d2v')
-
+	dim = 200
 	#print model["TRAIN_POS_8029"]
 	#exit()
-	train_arrays = np.zeros((25000, 200))
+	train_arrays = np.zeros((25000, dim))
 	train_labels = np.zeros(25000)
 
-	for i in range(12500):
-	    prefix_train_pos = 'TRAIN_POS_' + str(i)
-	    prefix_train_neg = 'TRAIN_NEG_' + str(i)
-	    train_arrays[i] = np.concatenate((model_dbow.docvecs[prefix_train_pos],model_dm.docvecs[prefix_train_pos]))
-	    train_arrays[12500 + i] = np.concatenate((model_dbow.docvecs[prefix_train_neg], model_dm.docvecs[prefix_train_neg]))
-	    train_labels[i] = 1
-	    train_labels[12500 + i] = 0
+	generador_dbow = GeneraVectores(model_dbow)
+	dbowVecs_Pos = generador_dbow.getVecsFromFile("data/trainpos.txt")
+	print "generados vectores dbowVecs_Pos"
+	dbowVecs_Neg = generador_dbow.getVecsFromFile("data/trainneg.txt")
+	print "generados vectores dbowVecs_Neg"
+	generador_dm = GeneraVectores(model_dm)
+	dmVecs_Pos = generador_dm.getVecsFromFile("data/trainpos.txt")
+	print "generados vectores dmVecs_Pos"
+	dmVecs_Neg = generador_dm.getVecsFromFile("data/trainneg.txt")
+	print "generados vectores dmVecs_Neg"
 
-	test_arrays = np.zeros((25000, 200))
+
+	for i in range(12500):
+		#prefix_train_pos = 'TRAIN_POS_' + str(i)
+		#prefix_train_neg = 'TRAIN_NEG_' + str(i)
+		train_arrays[i] = np.concatenate((dbowVecs_Pos[i],dmVecs_Pos[i]))
+		train_arrays[12500 + i] = np.concatenate((dbowVecs_Neg[i],dmVecs_Neg[i]))
+		train_labels[i] = 1
+		train_labels[12500 + i] = 0
+
+	test_arrays = np.zeros((25000, dim))
 	test_labels = np.zeros(25000)
 
+	dbowVecs_Pos = generador_dbow.getVecsFromFile("data/testpos.txt")
+	print "generados vectores dbowVecs_Pos Test"
+	dbowVecs_Neg = generador_dbow.getVecsFromFile("data/testneg.txt")
+	print "generados vectores dbowVecs_Neg Test"
+	dmVecs_Pos = generador_dm.getVecsFromFile("data/testpos.txt")
+	print "generados vectores dmVecs_Pos Test"
+	dmVecs_Neg = generador_dm.getVecsFromFile("data/testneg.txt")
+	print "generados vectores dmVecs_Neg Test"
+
 	for i in range(12500):
-	    prefix_test_pos = 'TEST_POS_' + str(i)
-	    prefix_test_neg = 'TEST_NEG_' + str(i)
-	    test_arrays[i] = np.concatenate((model_dbow.docvecs[prefix_test_pos], model_dm.docvecs[prefix_test_pos]))
-	    test_arrays[12500 + i] = np.concatenate((model_dbow.docvecs[prefix_test_neg], model_dm.docvecs[prefix_test_neg]))
-	    test_labels[i] = 1
-	    test_labels[12500 + i] = 0
+		test_arrays[i] = np.concatenate((dbowVecs_Pos[i],dmVecs_Pos[i]))
+		test_arrays[12500 + i] = np.concatenate((dbowVecs_Neg[i],dmVecs_Neg[i]))
+		test_labels[i] = 1
+		test_labels[12500 + i] = 0
+	"""
+	classifier = svm.SVC()
 
-	"""classifier = svm.SVC(C=1.0, cache_size=200, class_weight=None, coef0=0.0, degree=3,
-	gamma=0.0, kernel='rbf', max_iter=-1, probability=False, random_state=None,
-	shrinking=True, tol=0.001, verbose=False)
-
-	classifier.fit(train_arrays, train_labels) 
+	classifier.fit(train_arrays, train_labels)
 	print "SVM"
 	print classifier.score(test_arrays, test_labels)
 	"""
 	classifier = LogisticRegression(C=1.0, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, penalty='l2', random_state=None, tol=0.0001)
+		  intercept_scaling=1, penalty='l2', random_state=None, tol=0.0001)
 
 	classifier.fit(train_arrays, train_labels)
-	"""
-	LogisticRegression(C=1.0, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, penalty='l2', random_state=None, tol=0.0001)"""
 	print "Regresion logistica"
 	print classifier.score(test_arrays, test_labels)
 
 
 
-
+	"""
 	nnet = NeuralNet(50, learn_rate=1e-2)
 	maxiter = 5000
-	nnet.fit(train_arrays, train_labels, fine_tune=False, SGD=True, batch=150, maxiter=maxiter, rho=0.9)
+	nnet.fit(train_arrays, train_labels, fine_tune=False, SGD=True, batch=200, maxiter=maxiter)
 	print "Red neuronal"
 	print nnet.score(test_arrays, test_labels)
+	"""
+	"""
+	print "imprimiendo .ARFF"
+	f = open("entrenamiento.arff", "w", 4096)
+	f.write("@RELATION dbow_dm")
+	for i in range(dim):
+		f.write("@ATTRIBUTE dbow_dm" + str(i)+ " NUMERIC\n")
 
+	f.write("@ATTRIBUTE class {0,1}\n")
+
+	f.write("@DATA\n")
+	for indice, vector in enumerate(train_arrays):
+		for elemento in vector:
+			f.write(str(elemento) + ",")
+
+		f.write(str(int(train_labels[indice])) + "\n")
+
+	for indice, vector in enumerate(test_arrays):
+		for elemento in vector:
+			f.write(str(elemento) + ",")
+
+		f.write(str(int(test_labels[indice])) + "\n")
+
+	f.close()
+	"""
 

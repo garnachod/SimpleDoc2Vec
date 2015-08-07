@@ -48,9 +48,17 @@ class LabeledLineSentence(object):
 			for source, prefix in self.sources.items():
 				with utils.smart_open(source) as fin:
 					for item_no, line in enumerate(fin):
+						#print [prefix + '_%s' % item_no]
 						line = line.replace("\n", "")
+						#exit()
 						self.sentences.append(TaggedDocument(utils.to_unicode(line).split(), [prefix + '_%s' % item_no]))
-						
+						#self.sentences.append(LabeledSentence(utils.to_unicode(line).split(), [prefix + '_%s' % item_no]))
+						#self.sentences.append(LabeledSentenceMio(utils.to_unicode(line).split(), [prefix + '_%s' % item_no]))
+						#print labe.tags
+						#self.sentences.append(labe)
+		#self.sentences)
+		#perm = np.random.permutation(self.sentences.shape[0])
+    	#model_dm.train(all_train_reviews[perm])
 		return self.sentences
 		
 
@@ -61,55 +69,42 @@ class LabeledLineSentence(object):
 
 if __name__ == '__main__':
 	sources = {'data/trainneg.txt':'TRAIN_NEG', 'data/trainpos.txt':'TRAIN_POS', 'data/trainunsup.txt':'TRAIN_UNSP'}
-	dimension = 100
 	total_start = time.time()
 
 	sentences = LabeledLineSentence(sources)
-	dbow = False
-	if dbow:
-		model = Doc2Vec(min_count=1, window=10, size=dimension, sample=1e-3, negative=5, dm=0 ,workers=6, alpha=0.04)
-		
-		print "inicio vocab"
-		model.build_vocab(sentences.to_array())
-		print "fin vocab"
-		first_alpha = model.alpha
-		last_alpha = 0.01
-		next_alpha = first_alpha
-		epochs = 30
-		for epoch in range(epochs):
-			start = time.time()
-			print "iniciando epoca DBOW:"
-			print model.alpha
-			model.train(sentences.sentences_perm())
-			end = time.time()
-			next_alpha = (((first_alpha - last_alpha) / float(epochs)) * float(epochs - (epoch+1)) + last_alpha)
-			model.alpha = next_alpha
-			print "tiempo de la epoca " + str(epoch) +": " + str(end - start)
+	model = Doc2Vec.load('./imdb_dbow.d2v')
+	print "inicio vocab"
+	sentences.to_array()
+	print "fin vocab"
+	#for sentence in sentences.sentences_perm():
+	#	print sentence[1]
 
-		model.save('./imdb_dbow.d2v')
+	for epoch in range(10):
+		start = time.time()
+		print "iniciando epoca DBOW:"
+		model.train(sentences.sentences_perm())
+		#model.train()
+		end = time.time()
+		print "tiempo de la epoca " + str(epoch) +": " + str(end - start)
 
-	dm = True
-	if dm:
-		model = Doc2Vec(min_count=1, window=10, size=dimension, sample=1e-3, negative=5, workers=6, dm_mean=1, alpha=0.04)
-		print "inicio vocab"
-		model.build_vocab(sentences.to_array())
-		print "fin vocab"
-		first_alpha = model.alpha
-		last_alpha = 0.01
-		next_alpha = first_alpha
-		epochs = 30
-		for epoch in range(epochs):
-			start = time.time()
-			print "iniciando epoca DM:"
-			print model.alpha
-			model.train(sentences.sentences_perm())
-			end = time.time()
-			next_alpha = (((first_alpha - last_alpha) / float(epochs)) * float(epochs - (epoch+1)) + last_alpha)
-			model.alpha = next_alpha
-			print "tiempo de la epoca " + str(epoch) +": " + str(end - start)
+	model.save('./imdb_dbow.d2v')
 
-		model.save('./imdb_dm.d2v')
+	"""
+	model = Doc2Vec.load('./imdb_dm.d2v')
+	#for sentence in sentences.sentences_perm():
+	#	print sentence[1]
+
+	for epoch in range(10):
+		start = time.time()
+		print "iniciando epoca DM:"
+		model.train(sentences.sentences_perm())
+		#model.train()
+		end = time.time()
+		print "tiempo de la epoca " + str(epoch) +": " + str(end - start)
+
+	model.save('./imdb_dm.d2v')
 	
 	total_end = time.time()
 
 	print "tiempo total:" + str((total_end - total_start)/60.0)
+	"""
